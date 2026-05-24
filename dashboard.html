@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VentureIQ — Weekly Top 10</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c0f;
+    --surface: #111318;
+    --surface2: #181c24;
+    --border: rgba(255,255,255,0.06);
+    --border2: rgba(255,255,255,0.12);
+    --accent: #00e5a0;
+    --accent2: #00b87a;
+    --text: #f0f2f5;
+    --muted: #6b7280;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --blue: #3b82f6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* grid bg */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,160,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,160,0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+  /* HEADER */
+  header { padding: 48px 0 40px; }
+  .header-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+  .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-mark {
+    width: 40px; height: 40px;
+    background: var(--accent);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 14px; font-weight: 500;
+    color: #000;
+  }
+  .logo-name { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); }
+  .logo-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .header-meta { text-align: right; }
+  .week-label { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; letter-spacing: 0.05em; }
+  .week-date { font-size: 14px; color: var(--accent); font-weight: 500; margin-top: 2px; }
+
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(32px, 5vw, 52px);
+    line-height: 1.1;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  h1 em { color: var(--accent); font-style: italic; }
+  .subtitle { font-size: 15px; color: var(--muted); font-weight: 300; }
+
+  /* STATS ROW */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 32px 0; }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+  }
+  .stat-val { font-size: 28px; font-weight: 600; color: var(--text); line-height: 1; }
+  .stat-val.green { color: var(--accent); }
+  .stat-val.amber { color: var(--amber); }
+  .stat-lbl { font-size: 11px; color: var(--muted); margin-top: 5px; text-transform: uppercase; letter-spacing: 0.06em; }
+
+  /* FILE LOADER */
+  .loader-bar {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .loader-bar label {
+    font-size: 13px; color: var(--muted); white-space: nowrap;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .loader-bar label span { color: var(--accent); }
+  .loader-bar input[type=file] {
+    flex: 1;
+    font-size: 13px;
+    color: var(--text);
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+  .loader-bar input[type=file]::file-selector-button {
+    background: var(--accent);
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 10px;
+  }
+
+  /* TOP 10 LIST */
+  .section-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-size: 11px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    font-family: 'DM Mono', monospace;
+  }
+  .source-filters { display: flex; gap: 6px; }
+  .filter-btn {
+    font-size: 11px; padding: 4px 12px; border-radius: 20px;
+    border: 1px solid var(--border2); background: transparent;
+    color: var(--muted); cursor: pointer; transition: all 0.15s;
+    font-family: 'Outfit', sans-serif;
+  }
+  .filter-btn.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+  .filter-btn:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
+
+  .company-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .company-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 24px;
+    display: grid;
+    grid-template-columns: 48px 1fr auto;
+    gap: 16px;
+    align-items: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    animation: slideIn 0.4s ease both;
+  }
+  .company-card:hover { border-color: var(--accent); background: var(--surface2); }
+  .company-card.expanded { border-color: var(--accent); background: var(--surface2); border-radius: 14px 14px 0 0; border-bottom: none; }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .rank-badge {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 18px; font-weight: 500;
+    flex-shrink: 0;
+  }
+  .rank-1 { background: rgba(0,229,160,0.15); color: var(--accent); }
+  .rank-2 { background: rgba(0,229,160,0.1); color: var(--accent2); }
+  .rank-3 { background: rgba(0,229,160,0.07); color: var(--accent2); }
+  .rank-other { background: var(--surface2); color: var(--muted); font-size: 14px; }
+
+  .card-main { min-width: 0; }
+  .card-top { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap; }
+  .company-name { font-size: 16px; font-weight: 500; color: var(--text); }
+  .source-tag {
+    font-size: 10px; padding: 2px 8px; border-radius: 20px;
+    font-family: 'DM Mono', monospace; font-weight: 500;
+  }
+  .src-producthunt { background: rgba(218,90,48,0.15); color: #f97316; }
+  .src-yc { background: rgba(59,130,246,0.15); color: #60a5fa; }
+  .tagline { font-size: 13px; color: var(--muted); line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .card-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+  .score-big { font-size: 32px; font-weight: 600; line-height: 1; font-family: 'DM Mono', monospace; }
+  .score-lbl { font-size: 10px; color: var(--muted); }
+  .verdict-tag {
+    font-size: 10px; padding: 3px 10px; border-radius: 20px;
+    font-weight: 600; letter-spacing: 0.03em;
+  }
+  .v-invest { background: rgba(0,229,160,0.15); color: var(--accent); }
+  .v-watch { background: rgba(245,158,11,0.15); color: var(--amber); }
+  .v-pass { background: rgba(239,68,68,0.12); color: var(--red); }
+
+  /* EXPANDED PANEL */
+  .expand-panel {
+    background: var(--surface2);
+    border: 1px solid var(--accent);
+    border-top: none;
+    border-radius: 0 0 14px 14px;
+    padding: 20px 24px;
+    display: none;
+    animation: expandIn 0.2s ease;
+  }
+  .expand-panel.open { display: block; }
+  @keyframes expandIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .expand-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .expand-section-title {
+    font-size: 10px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 12px;
+  }
+
+  /* dimension bars */
+  .dim-list { display: flex; flex-direction: column; gap: 7px; }
+  .dim-row { display: grid; grid-template-columns: 1fr 80px 28px; align-items: center; gap: 8px; }
+  .dim-name { font-size: 11px; color: var(--muted); }
+  .dim-bar-bg { height: 4px; background: var(--border2); border-radius: 2px; overflow: hidden; }
+  .dim-bar-fill { height: 100%; border-radius: 2px; }
+  .dim-score { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--text); text-align: right; }
+
+  /* allocation */
+  .alloc-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 12px; }
+  .alloc-card { border-radius: 8px; padding: 10px 12px; }
+  .alloc-safe { background: rgba(0,229,160,0.08); border: 1px solid rgba(0,229,160,0.2); }
+  .alloc-mod { background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2); }
+  .alloc-agg { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); }
+  .alloc-type { font-size: 9px; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+  .alloc-safe .alloc-type { color: var(--accent); }
+  .alloc-mod .alloc-type { color: #60a5fa; }
+  .alloc-agg .alloc-type { color: var(--amber); }
+  .alloc-pct { font-size: 20px; font-weight: 600; font-family: 'DM Mono', monospace; }
+  .alloc-safe .alloc-pct { color: var(--accent); }
+  .alloc-mod .alloc-pct { color: #60a5fa; }
+  .alloc-agg .alloc-pct { color: var(--amber); }
+  .alloc-sub { font-size: 9px; margin-top: 2px; }
+  .alloc-safe .alloc-sub { color: var(--accent2); }
+  .alloc-mod .alloc-sub { color: #3b82f6; }
+  .alloc-agg .alloc-sub { color: #d97706; }
+
+  .verdict-banner {
+    border-radius: 8px; padding: 10px 14px;
+    font-size: 12px; font-weight: 500; color: var(--accent);
+    background: rgba(0,229,160,0.08);
+    border: 1px solid rgba(0,229,160,0.2);
+    margin-bottom: 12px;
+  }
+  .analysis-text { font-size: 12px; color: var(--muted); line-height: 1.7; }
+  .strength-risk { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  .sr-box { border-radius: 8px; padding: 10px 12px; }
+  .sr-strength { background: rgba(0,229,160,0.06); border: 1px solid rgba(0,229,160,0.15); }
+  .sr-risk { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.15); }
+  .sr-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+  .sr-strength .sr-label { color: var(--accent); }
+  .sr-risk .sr-label { color: var(--red); }
+  .sr-text { font-size: 11px; color: var(--muted); line-height: 1.5; }
+
+  /* empty + loading states */
+  .empty-state {
+    text-align: center; padding: 80px 20px;
+    border: 1px dashed var(--border2); border-radius: 14px;
+  }
+  .empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.3; }
+  .empty-title { font-size: 18px; color: var(--text); margin-bottom: 8px; }
+  .empty-sub { font-size: 13px; color: var(--muted); }
+
+  footer { padding: 48px 0 32px; text-align: center; }
+  .footer-text { font-size: 12px; color: var(--muted); }
+  .footer-text span { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="header-top">
+      <div class="logo">
+        <div class="logo-mark">VI</div>
+        <div>
+          <div class="logo-name">VentureIQ</div>
+          <div class="logo-sub">AI-powered startup intelligence</div>
+        </div>
+      </div>
+      <div class="header-meta">
+        <div class="week-label">WEEKLY REPORT</div>
+        <div class="week-date" id="week-date">—</div>
+      </div>
+    </div>
+    <h1>This week's<br><em>top 10</em> startups</h1>
+    <p class="subtitle">Ranked by AI conviction score across 9 VC dimensions</p>
+  </header>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-val" id="stat-total">—</div>
+      <div class="stat-lbl">Companies scored</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val green" id="stat-invest">—</div>
+      <div class="stat-lbl">Invest signals</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val" id="stat-avg">—</div>
+      <div class="stat-lbl">Avg conviction</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val amber" id="stat-top">—</div>
+      <div class="stat-lbl">Top score</div>
+    </div>
+  </div>
+
+  <div class="loader-bar">
+    <label><span>↑</span> Load your CSV report</label>
+    <input type="file" id="csv-file" accept=".csv" onchange="loadCSV(this)" />
+  </div>
+
+  <div class="section-head">
+    <div class="section-title">Top 10 by conviction score</div>
+    <div class="source-filters">
+      <button class="filter-btn active" onclick="filterSource('all',this)">All</button>
+      <button class="filter-btn" onclick="filterSource('producthunt',this)">Product Hunt</button>
+      <button class="filter-btn" onclick="filterSource('yc',this)">Y Combinator</button>
+    </div>
+  </div>
+
+  <div class="company-list" id="company-list">
+    <div class="empty-state">
+      <div class="empty-icon">⬆</div>
+      <div class="empty-title">Load your weekly report</div>
+      <div class="empty-sub">Click "Choose File" above and select your<br><code style="color:var(--accent)">data/startups_YYYY-MM-DD.csv</code> file</div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-text">
+      VentureIQ · Built with <span>Claude API</span> · 9-dimension VC framework · Kelly criterion allocation
+    </div>
+  </footer>
+</div>
+
+<script>
+let allData = [];
+let currentFilter = 'all';
+
+const DIMS = [
+  {key:'market_size_score', label:'Market size'},
+  {key:'pmf_score', label:'PMF'},
+  {key:'business_model_score', label:'Business model'},
+  {key:'moat_score', label:'Moat'},
+  {key:'team_score', label:'Team'},
+  {key:'growth_score', label:'Growth'},
+  {key:'unit_economics_score', label:'Unit economics'},
+  {key:'tech_score', label:'Tech depth'},
+  {key:'capital_efficiency_score', label:'Capital efficiency'},
+];
+
+function parseCSV(text) {
+  const lines = text.split('\n').filter(l => l.trim());
+  const headers = parseCSVLine(lines[0]);
+  const rows = [];
+  for (let i = 1; i < lines.length; i++) {
+    const vals = parseCSVLine(lines[i]);
+    if (vals.length < 3) continue;
+    const obj = {};
+    headers.forEach((h, idx) => obj[h.trim()] = (vals[idx] || '').trim());
+    rows.push(obj);
+  }
+  return rows;
+}
+
+function parseCSVLine(line) {
+  const result = [];
+  let cur = '';
+  let inQuote = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') { inQuote = !inQuote; }
+    else if (ch === ',' && !inQuote) { result.push(cur); cur = ''; }
+    else { cur += ch; }
+  }
+  result.push(cur);
+  return result;
+}
+
+function loadCSV(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const rows = parseCSV(e.target.result);
+    allData = rows
+      .filter(r => r.conviction_score)
+      .sort((a,b) => parseInt(b.conviction_score||0) - parseInt(a.conviction_score||0));
+    updateStats();
+    render();
+    // set week date from filename
+    const match = file.name.match(/(\d{4}-\d{2}-\d{2})/);
+    if (match) document.getElementById('week-date').textContent = formatDate(match[1]);
+  };
+  reader.readAsText(file);
+}
+
+function formatDate(d) {
+  const dt = new Date(d + 'T12:00:00');
+  return dt.toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'});
+}
+
+function updateStats() {
+  const total = allData.length;
+  const invest = allData.filter(r => ['Invest','Strong Invest'].includes(r.investment_verdict)).length;
+  const avg = total ? Math.round(allData.reduce((a,r) => a + parseInt(r.conviction_score||0), 0) / total) : 0;
+  const top = allData[0] ? parseInt(allData[0].conviction_score) : 0;
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-invest').textContent = invest;
+  document.getElementById('stat-avg').textContent = avg;
+  document.getElementById('stat-top').textContent = top;
+}
+
+function filterSource(src, btn) {
+  currentFilter = src;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function render() {
+  const filtered = currentFilter === 'all'
+    ? allData
+    : allData.filter(r => r.source === currentFilter);
+  const top10 = filtered.slice(0, 10);
+  const list = document.getElementById('company-list');
+  if (!top10.length) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No results</div><div class="empty-sub">Try a different filter</div></div>';
+    return;
+  }
+  list.innerHTML = top10.map((r, i) => renderCard(r, i)).join('');
+}
+
+function scoreColor(s) {
+  s = parseInt(s || 0);
+  if (s >= 65) return '#00e5a0';
+  if (s >= 50) return '#f59e0b';
+  return '#ef4444';
+}
+
+function dimColor(v) {
+  v = parseInt(v || 0);
+  if (v >= 7) return '#00e5a0';
+  if (v >= 5) return '#3b82f6';
+  if (v >= 3) return '#f59e0b';
+  return '#ef4444';
+}
+
+function verdictClass(v) {
+  if (!v) return 'v-watch';
+  if (v.includes('Invest')) return 'v-invest';
+  if (v === 'Pass') return 'v-pass';
+  return 'v-watch';
+}
+
+function parseDims(r) {
+  // Try JSON breakdown first
+  try {
+    const bd = JSON.parse(r.dimension_breakdown || '{}');
+    if (Object.keys(bd).length) return bd;
+  } catch(e) {}
+  // Fall back to direct fields
+  const result = {};
+  DIMS.forEach(d => { if (r[d.key]) result[d.key] = parseInt(r[d.key]); });
+  return result;
+}
+
+function renderCard(r, i) {
+  const rank = i + 1;
+  const rankClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : 'rank-other';
+  const score = parseInt(r.conviction_score || 0);
+  const srcClass = r.source === 'producthunt' ? 'src-producthunt' : 'src-yc';
+  const srcLabel = r.source === 'producthunt' ? 'Product Hunt' : 'Y Combinator';
+  const dims = parseDims(r);
+  const safe = parseFloat(r.safe_allocation_pct || 0).toFixed(1);
+  const mod = parseFloat(r.moderate_allocation_pct || 0).toFixed(1);
+  const agg = parseFloat(r.aggressive_allocation_pct || 0).toFixed(1);
+  const id = `card-${i}`;
+
+  const dimBars = DIMS.map(d => {
+    const v = parseInt(dims[d.key] || 0);
+    const pct = (v / 10 * 100).toFixed(0);
+    return `<div class="dim-row">
+      <div class="dim-name">${d.label}</div>
+      <div class="dim-bar-bg"><div class="dim-bar-fill" style="width:${pct}%;background:${dimColor(v)}"></div></div>
+      <div class="dim-score">${v}/10</div>
+    </div>`;
+  }).join('');
+
+  const dollarEx = r.dollar_examples ? (() => {
+    try {
+      const de = JSON.parse(r.dollar_examples);
+      return de['$250k_portfolio'] || '';
+    } catch(e) { return r.dollar_examples || ''; }
+  })() : '';
+
+  return `
+  <div class="company-card" id="${id}" onclick="toggleExpand('${id}')" style="animation-delay:${i*0.05}s">
+    <div class="rank-badge ${rankClass}">${rank}</div>
+    <div class="card-main">
+      <div class="card-top">
+        <span class="company-name">${r.name || '—'}</span>
+        <span class="source-tag ${srcClass}">${srcLabel}</span>
+      </div>
+      <div class="tagline">${r.tagline || '—'}</div>
+    </div>
+    <div class="card-right">
+      <div class="score-big" style="color:${scoreColor(score)}">${score}</div>
+      <div class="score-lbl">conviction</div>
+      <div class="verdict-tag ${verdictClass(r.investment_verdict)}">${r.investment_verdict || '—'}</div>
+    </div>
+  </div>
+  <div class="expand-panel" id="exp-${id}">
+    <div class="expand-grid">
+      <div>
+        <div class="expand-section-title">9-dimension scorecard</div>
+        <div class="dim-list">${dimBars}</div>
+      </div>
+      <div>
+        <div class="expand-section-title">Portfolio allocation (Kelly criterion)</div>
+        <div class="alloc-cards">
+          <div class="alloc-card alloc-safe">
+            <div class="alloc-type">Safe</div>
+            <div class="alloc-pct">${safe}%</div>
+            <div class="alloc-sub">Conservative</div>
+          </div>
+          <div class="alloc-card alloc-mod">
+            <div class="alloc-type">Moderate</div>
+            <div class="alloc-pct">${mod}%</div>
+            <div class="alloc-sub">Balanced</div>
+          </div>
+          <div class="alloc-card alloc-agg">
+            <div class="alloc-type">Aggressive</div>
+            <div class="alloc-pct">${agg}%</div>
+            <div class="alloc-sub">Risk-on</div>
+          </div>
+        </div>
+        ${r.allocation_verdict ? `<div class="verdict-banner">${r.allocation_verdict}</div>` : ''}
+        ${dollarEx ? `<div style="font-size:11px;color:var(--muted);margin-bottom:12px;font-family:'DM Mono',monospace">$250k portfolio: ${dollarEx}</div>` : ''}
+        <div class="expand-section-title">Investment memo</div>
+        <div class="analysis-text">${r.analysis_note || '—'}</div>
+        <div class="strength-risk">
+          <div class="sr-box sr-strength">
+            <div class="sr-label">Strength</div>
+            <div class="sr-text">${r.top_strength || '—'}</div>
+          </div>
+          <div class="sr-box sr-risk">
+            <div class="sr-label">Risk</div>
+            <div class="sr-text">${r.top_risk || '—'}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function toggleExpand(id) {
+  const card = document.getElementById(id);
+  const panel = document.getElementById('exp-' + id);
+  const isOpen = panel.classList.contains('open');
+  // close all
+  document.querySelectorAll('.expand-panel.open').forEach(p => p.classList.remove('open'));
+  document.querySelectorAll('.company-card.expanded').forEach(c => c.classList.remove('expanded'));
+  if (!isOpen) {
+    card.classList.add('expanded');
+    panel.classList.add('open');
+  }
+}
+</script>
+</body>
+</html>
