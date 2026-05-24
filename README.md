@@ -2,6 +2,9 @@
 
 > An automated VC research tool that discovers, scores, and ranks startups every week using professional investment frameworks and AI.
 
+![Dashboard](screenshot1.png)
+![Dashboard](screenshot2.png)
+
 **Live Dashboard → [nithink-pixel.github.io/ventureiq-scraper/dashboard.html](https://nithink-pixel.github.io/ventureiq-scraper/dashboard.html)**
 
 ---
