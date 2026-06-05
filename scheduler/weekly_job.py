@@ -6,6 +6,7 @@ from datetime import date
 from scrapers import producthunt, ycombinator, indiehackers, wellfound
 from scoring.scorer import score_companies
 from scoring.memo_generator import generate_memos
+from scoring.market_intelligence import generate_market_report
 from scoring.report import save_report
 
 ENABLED_SOURCES = {
@@ -75,6 +76,8 @@ def run_pipeline():
     scored = score_companies(filtered)
     print('[Pipeline] Generating deal memos...')
     scored = generate_memos(scored)
+    print('[Pipeline] Generating market intelligence report...')
+    market_report = generate_market_report(scored, week_of=week_of)
     csv_path = save_report(scored, week_of=week_of)
     print(f"[Pipeline] Done. Report saved to {csv_path}")
 
