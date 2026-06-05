@@ -5,6 +5,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from datetime import date
 from scrapers import producthunt, ycombinator, indiehackers, wellfound
 from scoring.scorer import score_companies
+from scoring.memo_generator import generate_memos
 from scoring.report import save_report
 
 ENABLED_SOURCES = {
@@ -72,6 +73,8 @@ def run_pipeline():
         return
 
     scored = score_companies(filtered)
+    print('[Pipeline] Generating deal memos...')
+    scored = generate_memos(scored)
     csv_path = save_report(scored, week_of=week_of)
     print(f"[Pipeline] Done. Report saved to {csv_path}")
 
