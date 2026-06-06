@@ -72,7 +72,7 @@ def _get_comparables(company: dict) -> dict:
 
     response = client.messages.create(
         model=MODEL,
-        max_tokens=1500,
+        max_tokens=800,
         messages=[{"role": "user", "content": prompt}]
     )
 

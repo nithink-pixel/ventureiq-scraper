@@ -77,16 +77,31 @@ def run_pipeline():
         return
 
     scored = score_companies(filtered)
-    print('[Pipeline] Generating deal memos...')
-    scored = generate_memos(scored)
-    print('[Pipeline] Adding founder intelligence...')
-    scored = add_founder_intelligence(scored)
-    print('[Pipeline] Adding comparable company analysis...')
-    scored = add_comparables(scored)
+    # Top 20 only for expensive layers
+    scored = sorted(scored, key=lambda x: int(x.get('conviction_score') or 0), reverse=True)
+    top20 = scored[:20]
+    rest = scored[20:]
+    print('[Pipeline] Generating deal memos for top 20...')
+    top20 = generate_memos(top20)
+    scored = top20 + rest
+    top20 = [c for c in scored if c.get('memo')][:20]
+    rest = [c for c in scored if not c.get('memo')]
+    print('[Pipeline] Adding founder intelligence for top 20...')
+    top20 = add_founder_intelligence(top20)
+    scored = top20 + rest
+    print('[Pipeline] Adding comparables for top 10...')
+    scored_sorted2 = sorted(scored, key=lambda x: int(x.get('conviction_score') or 0), reverse=True)
+    top10 = scored_sorted2[:10]
+    rest10 = scored_sorted2[10:]
+    top10 = add_comparables(top10)
+    scored = top10 + rest10
     print('[Pipeline] Generating market intelligence report...')
     market_report = generate_market_report(scored, week_of=week_of)
-    print('[Pipeline] Generating final recommendations...')
-    scored = generate_recommendations(scored)
+    top20 = [c for c in scored if c.get('memo')][:20]
+    rest = [c for c in scored if not c.get('memo')]
+    print('[Pipeline] Generating final recommendations for top 20...')
+    top20 = generate_recommendations(top20)
+    scored = top20 + rest
     csv_path = save_report(scored, week_of=week_of)
     print(f"[Pipeline] Done. Report saved to {csv_path}")
 

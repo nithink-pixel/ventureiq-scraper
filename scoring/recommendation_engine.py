@@ -67,7 +67,7 @@ def _generate_recommendation(company: dict) -> dict:
 
     response = client.messages.create(
         model=MODEL,
-        max_tokens=1200,
+        max_tokens=800,
         messages=[{"role": "user", "content": prompt}]
     )
 

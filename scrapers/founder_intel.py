@@ -84,7 +84,7 @@ def _analyze_founder(company: dict) -> dict:
 
     response = client.messages.create(
         model=MODEL,
-        max_tokens=1000,
+        max_tokens=600,
         messages=[{"role": "user", "content": prompt}]
     )
 

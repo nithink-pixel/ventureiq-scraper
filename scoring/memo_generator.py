@@ -58,7 +58,7 @@ def _generate_single_memo(company: dict) -> dict:
 
     response = client.messages.create(
         model=MODEL,
-        max_tokens=2000,
+        max_tokens=1200,
         messages=[{"role": "user", "content": prompt}]
     )
 
