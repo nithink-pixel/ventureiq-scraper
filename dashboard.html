@@ -418,6 +418,13 @@ function renderCard(r,i){
 }
 
 function renderVerdict(r,id){
+  // Use all available fields from CSV
+  r.final_recommendation = r.final_recommendation || r.investment_verdict || r.recommendation || 'Monitor';
+  r.analysis_note = r.analysis_note || '';
+  r.top_strength = r.top_strength || '';
+  r.top_risk = r.top_risk || '';
+  r.allocation_verdict = r.allocation_verdict || '';
+
   const rec=r.final_recommendation||r.recommendation||r.investment_verdict||'—';
   const recClass=rec==='Invest'?'invest':rec==='Pass'?'pass':'monitor';
   const conf=r.final_confidence||r.confidence_pct||'—';
