@@ -338,8 +338,8 @@ function showEmpty(msg){
 }
 
 function updateStats(){
-  const invest=allData.filter(r=>r.final_recommendation==='Invest'||r.recommendation==='Invest').length;
-  const monitor=allData.filter(r=>r.final_recommendation==='Monitor'||r.recommendation==='Monitor').length;
+  const invest=allData.filter(r=>r.final_recommendation==='Invest'||r.recommendation==='Invest'||r.investment_verdict==='Invest').length;
+  const monitor=allData.filter(r=>r.final_recommendation==='Monitor'||r.recommendation==='Monitor'||r.investment_verdict==='Watch').length;
   const avg=allData.length?Math.round(allData.reduce((a,r)=>a+parseInt(r.conviction_score||0),0)/allData.length):0;
   const top=allData[0]?parseInt(allData[0].conviction_score):0;
   document.getElementById('s-total').textContent=allData.length;
@@ -418,7 +418,7 @@ function renderCard(r,i){
 }
 
 function renderVerdict(r,id){
-  const rec=r.final_recommendation||r.recommendation||'Monitor';
+  const rec=r.final_recommendation||r.recommendation||r.investment_verdict||'—';
   const recClass=rec==='Invest'?'invest':rec==='Pass'?'pass':'monitor';
   const conf=r.final_confidence||r.confidence_pct||'—';
   const verdict=r.one_line_verdict||r.memo||'';
@@ -519,7 +519,7 @@ function renderScores(r,id){
       ${DIMS.map(d=>{const v=parseInt(dims[d.key]||0);const pct=(v/10*100).toFixed(0);return`<div class="dim-row"><div class="dim-name">${d.label}</div><div class="dim-bg"><div class="dim-fill" style="width:${pct}%;background:${dimColor(v)}"></div></div><div class="dim-val" style="color:${dimColor(v)}">${v}/10</div></div>`}).join('')}
     </div>
     <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      ${r.top_strength?`<div class="mini-box" style="border-left:2px solid var(--accent)"><div class="mini-title">Top strength</div><div style="font-size:12px;color:var(--muted)">${r.top_strength}</div></div>`:''}
+      ${r.top_strength?`<div class="mini-box" style="border-left:2px solid var(--accent)"><div class="mini-title">Top strength</div><div style="font-size:12px;color:var(--muted)">${r.top_strength}</div></div>`:''} ${r.growth_signal?`<div class="mini-box"><div class="mini-title">Growth signal</div><div style="font-size:12px;color:var(--accent)">${r.growth_signal}</div></div>`:''}
       ${r.top_risk?`<div class="mini-box" style="border-left:2px solid var(--red)"><div class="mini-title">Top risk</div><div style="font-size:12px;color:var(--muted)">${r.top_risk}</div></div>`:''}
     </div>
   </div>`;
